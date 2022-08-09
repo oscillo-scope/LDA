@@ -2,11 +2,8 @@ import pandas as pd
 import re
 import jieba
 import gensim
-from tqdm import tqdm
-import numpy as np
 from gensim import corpora, models
-from gensim.models.word2vec import Word2Vec
-import os
+import pyLDAvis.gensim_models
 ##数据过滤
 def DataFilter(line):
     res = re.sub('[^\u4e00-\u9fff\！\。\，\？]+','',line)
@@ -47,6 +44,8 @@ if __name__ == '__main__':
         corpus = [dictionary.doc2bow(text) for text in all_data]
         lda_model = gensim.models.LdaMulticore(corpus=corpus, num_topics=topic_num, id2word=dictionary,
                                                 random_state=100, passes=10, workers=3, per_word_topics=30)
+        vis_data = pyLDAvis.gensim_models.prepare(lda_model, corpus, dictionary)
+        pyLDAvis.save_html(vis_data, './CSRC-可视化/'+str(year)+'_lda.html')
 
         result = {'主题':[],'内容':[]}
         for i in range(topic_num):
